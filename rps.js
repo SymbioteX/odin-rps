@@ -1,55 +1,58 @@
-console.log("Welcome to RPS: \n");
-//console.log(playRound(getPlayerChoice(), getComputerChoice()));
-game();
+const result = document.querySelector(".result");
+const pick = document.querySelector(".pick");
+const pScore = document.querySelector(".player");
+const cScore = document.querySelector(".cpu");
 
-function game() {
-    /*let pWins = 0;
-    let cWins = 0;*/
-    let winner = 0;
-    for(let i = 0; i < 5; i++) {
-        winner += playRound(getPlayerChoice(), getComputerChoice());
-        
-        /*
-        if (winner > 0) {
-            pWins++;
-            console.log("You Win!");
-        } else if (winner < 0) {
-            cWins++;
-            console.log("You Lose!");
-        } else {
-            console.log("Tied!");
-        }*/
-    }
+const buttons = document.querySelectorAll('button');
+buttons.forEach((button) => {
+    button.addEventListener('click', (e) => {       
+        playRound(e.target.id, getComputerChoice());
+    });
+});
 
-    if (winner > 0) {
-        console.log("You Win! " + winner);
-    } else if (winner < 0) {
-        console.log("You Lose! " + winner);
-    } else {
-        console.log("Tied! " + winner);
-    }
-}
+let pWins = 0;
+let cWins = 0;
 
-function playRound(playerSelection, computerSelection) {
-    if ((playerSelection - 1 == computerSelection) || (playerSelection == 0 && computerSelection == 2)) {
-        console.log("ps: " + playerSelection + ", cs: " + computerSelection);
-        //return "You Win!";
-        return 1;
+function playRound(playerClicked, computerSelection) {
+    let playerSelection = getPlayerChoice(playerClicked);    
+    if ((playerSelection - 1 == computerSelection) || (playerSelection == 0 && computerSelection == 2)) {        
+        pWins++;
+        result.textContent = `You Win!`;
+        pick.textContent = `Your ${playerClicked} beats ${getCpuChoiceText(computerSelection)}`;
+        pScore.textContent = `Player: ${pWins}`;
     } else if (playerSelection == computerSelection) {
-        console.log("ps: " + playerSelection + ", cs: " + computerSelection);
-        //return "Tied!";
-        return 0;
-
+        result.textContent = `Tied!`;
+        pick.textContent = `You both picked ${playerClicked}`;
     } else {
-        console.log("ps: " + playerSelection + ", cs: " + computerSelection);
-        //return "You Lose!";
-        return -1;
+        cWins++;
+        result.textContent = `You Lose!`;
+        pick.textContent = `His ${getCpuChoiceText(computerSelection)} beats your ${playerClicked}`;
+        cScore.textContent = `CPU: ${cWins}`;
+    }
+
+    checkForWinner();
+}
+
+function checkForWinner() {
+    if (pWins > 4) {
+        alert("You Won the Match!");
+        resetScore();
+    } else if (cWins > 4) {
+        alert("You Lost the Match!");
+        resetScore();
     }
 }
 
-function  getPlayerChoice() {
-    let ans = prompt("Rock, Paper, or Scissors?");
+function resetScore() {
+    cWins = 0;
+    pWins = 0;
+    result.textContent = `Take your Pick!`;
+    pick.textContent = `First to 5 points wins`;
+    pScore.textContent = `Player: ${pWins}`;
+    cScore.textContent = `CPU: ${cWins}`;
+}
 
+function  getPlayerChoice(ans) {
     switch(ans.toLowerCase()) {
         case "paper":       return 0;
         case "scissors":    return 1;
@@ -59,9 +62,12 @@ function  getPlayerChoice() {
 
 function getComputerChoice() {
     return Math.floor(Math.random() * 3);
-    /*switch(Math.floor(Math.random() * 3)) {
-        case 0: return "Paper";
-        case 1: return "Scissors";
-        case 2: return "Rock";
-    }*/
+}
+
+function getCpuChoiceText(choice) {
+    switch(choice) {
+        case 0:     return "paper";
+        case 1:     return "scissors";
+        case 2:     return "rock";
+    }
 }
